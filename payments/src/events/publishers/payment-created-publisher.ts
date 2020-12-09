@@ -1,4 +1,4 @@
-import { PaymentCreatedEvent, Publisher, Subjects } from '@ticketme/commonn';
+import { Subjects, Publisher, PaymentCreatedEvent } from '@ticketme/commonn';
 
 export class PaymentCreatedPublisher extends Publisher<PaymentCreatedEvent> {
   subject: Subjects.PaymentCreated = Subjects.PaymentCreated;

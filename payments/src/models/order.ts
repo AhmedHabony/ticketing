@@ -1,6 +1,6 @@
-import { OrderStatus } from '@ticketme/commonn';
 import mongoose from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
+import { OrderStatus } from '@ticketme/commonn';
 
 interface OrderAttrs {
   id: string;

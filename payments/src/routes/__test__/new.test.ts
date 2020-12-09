@@ -6,8 +6,6 @@ import { Order } from '../../models/order';
 import { stripe } from '../../stripe';
 import { Payment } from '../../models/payment';
 
-jest.mock('../../stripe');
-
 it('returns a 404 when purchasing an order that does not exist', async () => {
   await request(app)
     .post('/api/payments')

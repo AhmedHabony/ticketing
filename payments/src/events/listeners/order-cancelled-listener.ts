@@ -1,12 +1,13 @@
 import {
-  Listener,
   OrderCancelledEvent,
-  OrderStatus,
   Subjects,
+  Listener,
+  OrderStatus,
 } from '@ticketme/commonn';
-import { queueGroupName } from './queue-group-name';
 import { Message } from 'node-nats-streaming';
+import { queueGroupName } from './queue-group-name';
 import { Order } from '../../models/order';
+
 export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
   subject: Subjects.OrderCancelled = Subjects.OrderCancelled;
   queueGroupName = queueGroupName;
@@ -17,7 +18,9 @@ export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
       version: data.version - 1,
     });
 
-    if (!order) throw new Error('Order not found');
+    if (!order) {
+      throw new Error('Order not found');
+    }
 
     order.set({ status: OrderStatus.Cancelled });
     await order.save();

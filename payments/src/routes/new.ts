@@ -1,18 +1,16 @@
-import express, { Response, Request } from 'express';
+import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { Payment } from '../models/payment';
-
 import {
   requireAuth,
   validateRequest,
   BadRequestError,
-  NotFoundError,
   NotAuthorizedError,
+  NotFoundError,
   OrderStatus,
 } from '@ticketme/commonn';
-
-import { Order } from '../models/order';
 import { stripe } from '../stripe';
+import { Order } from '../models/order';
+import { Payment } from '../models/payment';
 import { PaymentCreatedPublisher } from '../events/publishers/payment-created-publisher';
 import { natsWrapper } from '../nats-wrapper';
 
@@ -28,10 +26,15 @@ router.post(
 
     const order = await Order.findById(orderId);
 
-    if (!order) throw new NotFoundError();
-    if (order.userId !== req.currentUser!.id) throw new NotAuthorizedError();
-    if (order.status === OrderStatus.Cancelled)
+    if (!order) {
+      throw new NotFoundError();
+    }
+    if (order.userId !== req.currentUser!.id) {
+      throw new NotAuthorizedError();
+    }
+    if (order.status === OrderStatus.Cancelled) {
       throw new BadRequestError('Cannot pay for an cancelled order');
+    }
 
     const charge = await stripe.charges.create({
       currency: 'usd',
@@ -43,7 +46,6 @@ router.post(
       stripeId: charge.id,
     });
     await payment.save();
-
     new PaymentCreatedPublisher(natsWrapper.client).publish({
       id: payment.id,
       orderId: payment.orderId,
