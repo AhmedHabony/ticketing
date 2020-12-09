@@ -1,23 +1,23 @@
-import { ExpirationCompleteListener } from '../expiration-complete-listener';
 import mongoose from 'mongoose';
 import { Message } from 'node-nats-streaming';
+import { OrderStatus, ExpirationCompleteEvent } from '@sgtickets/common';
+import { ExpirationCompleteListener } from '../expiration-complete-listener';
 import { natsWrapper } from '../../../nats-wrapper';
-import { Ticket } from '../../../models/ticket';
 import { Order } from '../../../models/order';
-import { ExpirationCompleteEvent, OrderStatus } from '@ticketme/commonn';
+import { Ticket } from '../../../models/ticket';
 
 const setup = async () => {
   const listener = new ExpirationCompleteListener(natsWrapper.client);
 
   const ticket = Ticket.build({
     id: mongoose.Types.ObjectId().toHexString(),
-    title: 'correct',
-    price: 33,
+    title: 'concert',
+    price: 20,
   });
   await ticket.save();
   const order = Order.build({
     status: OrderStatus.Created,
-    userId: 'asd',
+    userId: 'alskdfj',
     expiresAt: new Date(),
     ticket,
   });
@@ -35,7 +35,7 @@ const setup = async () => {
   return { listener, order, ticket, data, msg };
 };
 
-it('should updates the order status to cancelled', async () => {
+it('updates the order status to cancelled', async () => {
   const { listener, order, data, msg } = await setup();
 
   await listener.onMessage(data, msg);
@@ -43,8 +43,10 @@ it('should updates the order status to cancelled', async () => {
   const updatedOrder = await Order.findById(order.id);
   expect(updatedOrder!.status).toEqual(OrderStatus.Cancelled);
 });
-it('should emits an orderCancelled event', async () => {
+
+it('emit an OrderCancelled event', async () => {
   const { listener, order, data, msg } = await setup();
+
   await listener.onMessage(data, msg);
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
@@ -52,13 +54,13 @@ it('should emits an orderCancelled event', async () => {
   const eventData = JSON.parse(
     (natsWrapper.client.publish as jest.Mock).mock.calls[0][1]
   );
-
   expect(eventData.id).toEqual(order.id);
 });
-it('should ack the message', async () => {
+
+it('ack the message', async () => {
   const { listener, data, msg } = await setup();
 
   await listener.onMessage(data, msg);
 
-  expect(msg.ack()).toHaveBeenCalled();
+  expect(msg.ack).toHaveBeenCalled();
 });
