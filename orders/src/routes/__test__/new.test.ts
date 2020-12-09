@@ -5,7 +5,7 @@ import { Order, OrderStatus } from '../../models/order';
 import { Ticket } from '../../models/ticket';
 import { natsWrapper } from '../../nats-wrapper';
 
-it('should returns an error if the ticket dose not exist ', async () => {
+it('returns an error if the ticket does not exist', async () => {
   const ticketId = mongoose.Types.ObjectId();
 
   await request(app)
@@ -14,11 +14,11 @@ it('should returns an error if the ticket dose not exist ', async () => {
     .send({ ticketId })
     .expect(404);
 });
-it('should returns an error if the ticket is already reserved', async () => {
+
+it('returns an error if the ticket is already reserved', async () => {
   const ticket = Ticket.build({
     id: mongoose.Types.ObjectId().toHexString(),
-
-    title: 'connect',
+    title: 'concert',
     price: 20,
   });
   await ticket.save();
@@ -28,7 +28,6 @@ it('should returns an error if the ticket is already reserved', async () => {
     status: OrderStatus.Created,
     expiresAt: new Date(),
   });
-
   await order.save();
 
   await request(app)
@@ -38,12 +37,11 @@ it('should returns an error if the ticket is already reserved', async () => {
     .expect(400);
 });
 
-it('should reserves a ticket', async () => {
+it('reserves a ticket', async () => {
   const ticket = Ticket.build({
     id: mongoose.Types.ObjectId().toHexString(),
-
-    title: 'connect',
-    price: 30,
+    title: 'concert',
+    price: 20,
   });
   await ticket.save();
 
@@ -57,8 +55,8 @@ it('should reserves a ticket', async () => {
 it('emits an order created event', async () => {
   const ticket = Ticket.build({
     id: mongoose.Types.ObjectId().toHexString(),
-    title: 'connect',
-    price: 30,
+    title: 'concert',
+    price: 20,
   });
   await ticket.save();
 

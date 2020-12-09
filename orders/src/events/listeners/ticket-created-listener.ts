@@ -3,7 +3,7 @@ import { Message } from 'node-nats-streaming';
 import { Ticket } from '../../models/ticket';
 import { queueGroupName } from './queue-group-name';
 
-export class TicketCratedListener extends Listener<TicketCreatedEvent> {
+export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
   subject: Subjects.TicketCrated = Subjects.TicketCrated;
   queueGroupName = queueGroupName;
 
@@ -14,8 +14,7 @@ export class TicketCratedListener extends Listener<TicketCreatedEvent> {
       title,
       price,
     });
-    await ticket
-      .save()
+    await ticket.save();
 
     msg.ack();
   }
