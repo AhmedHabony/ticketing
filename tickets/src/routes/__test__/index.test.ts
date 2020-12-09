@@ -3,16 +3,17 @@ import { app } from '../../app';
 
 const createTicket = () => {
   return request(app).post('/api/tickets').set('Cookie', global.signin()).send({
-    title: 'asd1',
+    title: 'asldkf',
     price: 20,
   });
 };
-it('should fetch a list of tickets', async () => {
+
+it('can fetch a list of tickets', async () => {
   await createTicket();
   await createTicket();
   await createTicket();
 
-  const res = await request(app).get('/api/tickets').send().expect(200);
+  const response = await request(app).get('/api/tickets').send().expect(200);
 
-  expect(res.body.length).toEqual(3);
+  expect(response.body.length).toEqual(3);
 });
