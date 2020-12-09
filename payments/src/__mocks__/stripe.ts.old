@@ -1,4 +1,4 @@
-export const stripeOld = {
+export const stripe = {
   charges: {
     create: jest.fn().mockResolvedValue({}),
   },
